@@ -5,50 +5,48 @@
 ### Date: 2019-09-30
 ###########################################################
 
-library(RCurl)
 library(lubridate)
 library(raster)
 library(ncdf4)
 library(rgdal)
-library(httr)
-library(curl)
 
-###########################################################
-### Enter password information
-###########################################################
-#https://urs.earthdata.nasa.gov/profile <-- GET A EARTHDATA LOGIN
-username = 'hilarydugan@gmail.com'
-password = 'Earthdata2017'
+dumpdir_nc = 'C:/Users/steeleb/Dropbox/gloeo_ME_lakes/data/modern gloeo/raw data/Auburn/NLDAS_download/raw/'
+startdatetime = '2013-01-01 00:00:00'
+enddatetime = '2019-12-31 23:00:00'
+loc_tz = 'EST'
+out.ts = seq.POSIXt(as.POSIXct(startdatetime, tz = loc_tz),as.POSIXct(enddatetime,tz=loc_tz), by = 'hour')
 
-###########################################################
-### Use shapefile of lake to set bounding box
-###########################################################
-# read in lake file to get bounding box
-lakeShape = st_read('Shapefiles/LakeMendota.shp')
-extent = as.numeric(st_bbox(lakeShape))
 
 
 ###########################################################
-### Set timeframe
+### set dump directory for .csv files and lake name
 ###########################################################
-out = seq.POSIXt(as.POSIXct('1980-01-01 01:00',tz = 'GMT'),as.POSIXct('2019-12-31 23:00',tz='GMT'),by = 'hour')
-vars = c('PEVAPsfc_110_SFC_acc1h', 'DLWRFsfc_110_SFC', 'DSWRFsfc_110_SFC', 'CAPE180_0mb_110_SPDY',
-         'CONVfracsfc_110_SFC_acc1h', 'APCPsfc_110_SFC_acc1h', 'SPFH2m_110_HTGL',
-         'VGRD10m_110_HTGL', 'UGRD10m_110_HTGL', 'TMP2m_110_HTGL', 'PRESsfc_110_SFC')
-
-# Create output list of tables
-output = list()
+dumpdir_csv = 'C:/Users/steeleb/Dropbox/gloeo_ME_lakes/data/modern gloeo/raw data/Auburn/NLDAS_download/raw_csv/'
+lake_name = 'Auburn'
 
 ###########################################################
 ### Need to know how many cells your lake falls within
-### Can download one instance of data and see how many columns there are
+### Can download one instance of data from the earthdata site and see how many columns there are
+### use 'nc_open(filename)' to see how many cells there are
 ###########################################################
-cellNum = 6 #How many output cells will there be? Need to check this beforehand
-for (l in 1:11){
+cellNum = 1 
+#How many output cells will there be? Need to check this beforehand by downloading a single netcdf file for your location
+
+
+###########################################################
+### Set up the output data frame
+###########################################################
+
+#save the variable names in nc files
+vars_nc = c('TMP','SPFH', 'PRES', 'UGRD', 'VGRD', 'DLWRF', 'CONVfrac', 'CAPE', 'PEVAP', 'APCP', 'DSWRF')
+
+output <- NULL
+#set up output dataframe for the number of cells above and the number of columns of data
+for (l in 1:length(vars_nc)){
   colClasses = c("POSIXct", rep("numeric",cellNum))
-  col.names = c('dateTime',rep(vars[l],cellNum))
+  col.names = c('dateTime',rep(vars_nc[l],cellNum))
   output[[l]] = read.table(text = "",colClasses = colClasses,col.names = col.names)
-  attributes(output[[l]]$dateTime)$tzone = 'GMT'
+  attributes(output[[l]]$dateTime)$tzone = loc_tz
 }
 
 
@@ -58,40 +56,28 @@ for (l in 1:11){
 # Start the clock!
 ptm <- proc.time()
 
-for (i in 333120:length(out)) {
-  print(out[i])
-  yearOut = year(out[i])
-  monthOut = format(out[i], "%m")
-  dayOut = format(out[i], "%d")
-  hourOut = format(out[i], "%H%M")
-  doyOut = format(out[i],'%j')
+#make a list of the nc files that you want to extract
+nc_files <- list.files(dumpdir_nc)
 
-  filename = format(out[i], "%Y%m%d%H%M")
-
-  for (v in 1:11) {
-    br = brick(paste('~/Documents/MendotaRawData/',filename,'.nc',sep=''),varname = vars[v])
-    output[[v]][i,1] = out[i]
-    output[[v]][i,-1] = getValues(br[[1]])
+for (i in 1:length(nc_files)) {
+    print(out.ts[i])
+  
+    for (v in 1:length(vars_nc)) {
+      nldasvar <- vars_nc[v]
+    br = nc_open(paste0(dumpdir_nc,nc_files[i]))
+    output[[v]][i,1] = out.ts[i]
+    output[[v]][i,-1] = ncvar_get(br, nldasvar)
   }
   rm(br)
-
 }
 # Stop the clock
 proc.time() - ptm
 
 ###########################################################
-### Save all 11 variables from the output list
+### Save all 11 variables from the output list in separated .csv's
 ###########################################################
 for (f in 1:11){
-  write.csv(output[[f]],paste('Mendota_',vars[f],'.csv',sep=''),row.names=F)
+  write.csv(output[[f]],paste0(dumpdir_csv, lake_name,vars_nc[f],'.csv'),row.names=F)
 }
 
 
-###########################################################
-### Read 11 variables into output list
-###########################################################
-# for (f in 1:11){
-#   a = read_csv(paste('TroutLake_',vars[f],'.csv',sep=''))
-#   output[[f]] = a
-#   
-# }
