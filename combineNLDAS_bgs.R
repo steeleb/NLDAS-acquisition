@@ -5,17 +5,12 @@
 ### Date: 2019-09-30
 ###########################################################
 
+#v05Mar21 BGS: removed hardcoding after line 27
+
 library(lubridate)
 library(raster)
 library(ncdf4)
 library(rgdal)
-
-dumpdir_nc = 'C:/Users/steeleb/Dropbox/gloeo_ME_lakes/data/modern gloeo/raw data/Auburn/NLDAS_download/raw/'
-startdatetime = '2013-01-01 00:00:00'
-enddatetime = '2019-12-31 23:00:00'
-loc_tz = 'EST'
-out.ts = seq.POSIXt(as.POSIXct(startdatetime, tz = loc_tz),as.POSIXct(enddatetime,tz=loc_tz), by = 'hour')
-
 
 
 ###########################################################
