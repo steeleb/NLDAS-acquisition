@@ -1,8 +1,12 @@
 # NLDAS-acquisition
 This repository contains the scripts from Hilary Dugan (hdugan@wisc.edu) for downloading and processing NLDAS-2 data. Code should be properly attributed.
 
+## Mar 2021:
+B updated the getNLDAS_simple to remove the hardcoded information after line 43
+
+
 ## Dec 2020:
-Updated with getNLDAS_simple-PQT.R replaces getNLDAS_simple.R - there were bugs that were worked out by one of Hilary's postdocs Robert Ladwig.
+Updated with getNLDAS_simple-PQT.R (archived, incorporated into Mar update) - there were bugs that were worked out by one of Hilary's postdocs Robert Ladwig.
 
 ## Nov 2020:
 Information from Hilary:

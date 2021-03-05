@@ -5,8 +5,6 @@
 ### Date: 2019-09-30
 ###########################################################
 
-# v 04Mar2021: BGS updated to remove hardcoding: only first 43 lines need to be edited
-
 library(RCurl)
 library(lubridate)
 library(raster)
@@ -14,48 +12,38 @@ library(ncdf4)
 library(sf)
 library(httr)
 library(curl)
-library(stringr)
-
-###########################################################
-### Point to dump directory where data will be saved
-###########################################################
-dumpdir_nc = 'C:/Users/steeleb/Dropbox/gloeo_ME_lakes/data/modern gloeo/raw data/Auburn/NLDAS_download/raw/'
 
 ###########################################################
 ### Enter password information
 ###########################################################
 #https://urs.earthdata.nasa.gov/profile <-- GET A EARTHDATA LOGIN
-username = 'steeleb'
-password = 'B8e!S3KAt@D54hz'
-#in addition, make sure you have authorized your account access to the GEODISC archives:
-https://disc.gsfc.nasa.gov/earthdata-login
+username = 'ptran5@wisc.edu'
+password = 'Earthdata1'
 
 ###########################################################
 ### Use shapefile of lake to set bounding box
 ###########################################################
-# read in lake file (as a .shp file) to get bounding box
-# lakeShape = st_read('shapefile.shp') 
-extent = as.numeric(c(-70.27, 44.15, -70.25, 44.17)) 
-#if the extent is loaded from the shapefile (above), make sure they are in decimal degrees, otherwise this code will not work
+# read in lake file to get bounding box
+# Mendota Example
+lakeShape = st_read('Code/Dugan-Webscraper-NLDAS2/Shapefiles/LakeMendota.shp')
+extent = as.numeric(st_bbox(lakeShape))
 
 ###########################################################
 ### Set timeframe
 ###########################################################
-startdatetime = '2013-01-01 00:00:00'
-enddatetime = '2019-12-31 23:00:00'
-loc_tz = 'EST'
-
-
-# sequence the datetime over your desired time period
-out.ts = seq.POSIXt(as.POSIXct(startdatetime, tz = loc_tz),as.POSIXct(enddatetime,tz=loc_tz), by = 'hour')
-
-# list vars you are interested in
+out.ts = seq.POSIXt(as.POSIXct('2020-01-01 00:00:00',tz = 'GMT'),as.POSIXct('2020-12-02 23:00',tz='GMT'),by = 'hour')
 vars = c('PEVAPsfc_110_SFC_acc1h', 'DLWRFsfc_110_SFC', 'DSWRFsfc_110_SFC', 'CAPE180_0mb_110_SPDY',
          'CONVfracsfc_110_SFC_acc1h', 'APCPsfc_110_SFC_acc1h', 'SPFH2m_110_HTGL',
          'VGRD10m_110_HTGL', 'UGRD10m_110_HTGL', 'TMP2m_110_HTGL', 'PRESsfc_110_SFC')
 
 # Create output list of tables
 output = list()
+
+###########################################################
+### Need to know how many cells your lake falls within
+### Can download one instance of data and see how many columns there are
+###########################################################
+
 
 ###########################################################
 ### Run hourly loop
@@ -136,12 +124,12 @@ for (i in 1:length(out.ts)) {
   curl::handle_setopt(
     handle = h,
     httpauth = 1,
-    userpwd = paste0(username, ':', password)
+    userpwd = "ptran5@wisc.edu:Earthdata1"
   )
 
   # resp <- curl::curl_fetch_memory(lk, handle = h)
   resp <- curl::curl_fetch_disk(url = lk, 
-                                path = paste(dumpdir_nc,filename,'.nc',sep=''), 
+                                path = paste('~/Documents/MendotaRawData2/',filename,'.nc',sep=''), 
                                 handle = h)
 
   #Sys.sleep(2)

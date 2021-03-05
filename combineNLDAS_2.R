@@ -1,9 +1,10 @@
 library(tidyverse)
-files = list.files(pattern = '.csv')
 
-LakeName = 'Mendota'
-cellNum = 6 #Number of cells
-box = 5 # Chosen cell
+files = list.files(dumpdir_csv, pattern = '.csv')
+
+LakeName = 'Auburn'
+cellNum = 1 #Number of cells
+box = 1 # Chosen cell
 
 vars = c('PEVAPsfc_110_SFC_acc1h', 'DLWRFsfc_110_SFC', 'DSWRFsfc_110_SFC', 'CAPE180_0mb_110_SPDY',
          'CONVfracsfc_110_SFC_acc1h', 'APCPsfc_110_SFC_acc1h', 'SPFH2m_110_HTGL', 
