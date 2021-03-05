@@ -1,15 +1,24 @@
+#v05Mar2021 BGS: updated to remove hardcoding after line 14; NOTE, this refers to values created in combineNLDAS.R
+
 library(tidyverse)
 
+# define the dump directory for your final .csv files
 dumpdir_final = 'C:/Users/steeleb/Dropbox/gloeo_ME_lakes/data/modern gloeo/raw data/Auburn/NLDAS_download/final/'
 
+# make a list of the files previously collated
 files = list.files(dumpdir_csv, pattern = '.csv')
 
+#define the lakename, and the box number
 LakeName = 'Auburn'
-cellNum = 1 #Number of cells
-box = 1 # Chosen cell
+cellNum #Number of cells from combineNLDAS.R
+box = 1 # Chosen cell, you'll have to look at these to figure out which one is best. use nc_get(filename.nc, 'lat'), etc to find bounding boxes
 
+
+
+#make a null dataframme with the sequence of datetimes from above
 final.box = data.frame(dateTime = seq.POSIXt(as.POSIXct(startdatetime, tz= loc_tz),as.POSIXct(enddatetime,tz=loc_tz),by = 'hour'))
 
+#index each box csv to break out each of the cells
 for (i in 1:11){
   fileIndx = grep(vars_nc[i],files)
   
@@ -30,7 +39,7 @@ for (i in 1:11){
   final.box[,i+1] = out[,box+1] 
 }
 
-####### Single Dataframe ###########
+####### Create a Single Dataframe ###########
 colnames(final.box) = c('dateTime',vars_nc)
 head(final.box)
 which(duplicated(final.box$dateTime)) #check for duplicate time stamps
@@ -44,7 +53,6 @@ qsat = function(Ta, Pa){
   return(q)
 }
 
-# Following code used to reformat dataframe to format used with GLM-AED
 
 # Variable names for NLDAS2 forcing file:
 # PDS_IDs:Short_Name:Full_Name [Unit]
@@ -63,6 +71,8 @@ qsat = function(Ta, Pa){
 # 11:TMP2m:2-m above ground Temperature [K]
 # 33:UGRD10m:10-m above ground Zonal wind speed [m/s]
 # 34:VGRD10m:10-m above ground Meridional wind speed [m/s]
+
+# Following code used to reformat dataframe to format used with GLM-AED
 
 library(dplyr)
 drivers <- final.box %>% 
