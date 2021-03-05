@@ -1,15 +1,19 @@
 # NLDAS-acquisition
 This repository contains the scripts from Hilary Dugan (hdugan@wisc.edu) for downloading and processing NLDAS-2 data. Code should be properly attributed.
 
+B. Steele has made updates since that time (updates below 'Mar 2021')
+
 
 ## Mar 2021:
 New workflow: run *getNLDAS_simple.R*, then *combineNLDAS.R*, then *collateNLDAS.R*
+
 NOTE: getNLDAS_simple takes about 2-3 seconds per hour to download. (aka, 1 day of NLDAS data takes about a minute to download)
 
 updates in code:
-B updated the getNLDAS_simple.R to remove the hardcoded information after line 43
-B updated combineNLDAS.R to use nc_open and nc_get to eliminate errors from brick() and extractValues() also, removed hardcoding after first handful of lines
-B updated collateNLDAS.R (formerly known as combineNLDAS_2.R) to remove hard coding. 
+- B updated the getNLDAS_simple.R to remove the hardcoded information after line 43
+- B updated combineNLDAS.R to use nc_open and nc_get to eliminate errors from brick() and extractValues() also, removed hardcoding after first handful of lines
+- B updated collateNLDAS.R (formerly known as combineNLDAS_2.R) to remove hard coding. 
+
 NOTE: there are repeated references between the three scripts, I reccommend running in same R session.
 
 ### Future updates planned soon: 
