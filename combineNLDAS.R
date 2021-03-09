@@ -5,18 +5,23 @@
 ### Date: 2019-09-30
 ###########################################################
 
-#v05Mar21 BGS: removed hardcoding after line 27
+#v09Mar21 BGS: removed reliance on other script objects; nc_open timing out after about 3 months of data, so added an additional loop in the read function to open by month and added nc_close to script.
+#v05Mar21 BGS: removed hardcoding after line 37
 
 library(lubridate)
-library(raster)
 library(ncdf4)
-library(rgdal)
+library(tidyverse)
 
 
 ###########################################################
 ### set dump directory for .csv files and lake name
 ###########################################################
+#where your .nc files are stored -- make sure all .nc files have a size >0, otherwise your loop will get hung up!
+dumpdir_nc = 'C:/Users/steeleb/Dropbox/gloeo_ME_lakes/data/modern gloeo/raw data/Auburn/NLDAS_download/raw/'
+
+#where you want to dump your monthly .csv's
 dumpdir_csv = 'C:/Users/steeleb/Dropbox/gloeo_ME_lakes/data/modern gloeo/raw data/Auburn/NLDAS_download/raw_csv/'
+
 lake_name = 'Auburn'
 
 ###########################################################
@@ -27,6 +32,7 @@ lake_name = 'Auburn'
 cellNum = 1 
 #How many output cells will there be? Need to check this beforehand by downloading a single netcdf file for your location
 
+loc_tz = 'Etc/GMT+5' #EST with no DST observed
 
 ###########################################################
 ### Set up the output data frame
@@ -35,8 +41,8 @@ cellNum = 1
 #save the variable names in nc files
 vars_nc = c('TMP','SPFH', 'PRES', 'UGRD', 'VGRD', 'DLWRF', 'CONVfrac', 'CAPE', 'PEVAP', 'APCP', 'DSWRF')
 
-output <- NULL
 #set up output dataframe for the number of cells above and the number of columns of data
+output <- NULL
 for (l in 1:length(vars_nc)){
   colClasses = c("POSIXct", rep("numeric",cellNum))
   col.names = c('dateTime',rep(vars_nc[l],cellNum))
@@ -44,35 +50,36 @@ for (l in 1:length(vars_nc)){
   attributes(output[[l]]$dateTime)$tzone = loc_tz
 }
 
-
 ###########################################################
-### Run hourly loop
+### Run file list loop
 ###########################################################
 # Start the clock!
 ptm <- proc.time()
 
-#make a list of the nc files that you want to extract
 nc_files <- list.files(dumpdir_nc)
 
 for (i in 1:length(nc_files)) {
-    print(out.ts[i])
-  
-    for (v in 1:length(vars_nc)) {
-      nldasvar <- vars_nc[v]
+  print(nc_files[i])
+    
+  for (v in 1:length(vars_nc)) {
+    nldasvar <- vars_nc[v]
     br = nc_open(paste0(dumpdir_nc,nc_files[i]))
-    output[[v]][i,1] = out.ts[i]
+    output[[v]][i,1] = (paste0(substr(nc_files[i], 1, 4),'-', substr(nc_files[i], 5,6), '-', substr(nc_files[i], 7,8), ' ', substr(nc_files[i], 9,10), ':', substr(nc_files[i], 11,12)))
     output[[v]][i,-1] = ncvar_get(br, nldasvar)
+    nc_close(br)
   }
   rm(br)
 }
+
 # Stop the clock
 proc.time() - ptm
 
 ###########################################################
-### Save all 11 variables from the output list in separated .csv's
+### save each variable in a .csv
 ###########################################################
-for (f in 1:11){
-  write.csv(output[[f]],paste0(dumpdir_csv, lake_name,vars_nc[f],'.csv'),row.names=F)
+for (f in 1:length(vars_nc)){
+  write.csv(output[[f]],paste0(dumpdir_csv, lake_name, vars_nc[f],'.csv'),row.names=F)
 }
+
 
 

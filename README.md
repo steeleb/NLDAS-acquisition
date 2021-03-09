@@ -3,25 +3,22 @@ This repository contains the scripts from Hilary Dugan (hdugan@wisc.edu) for dow
 
 B. Steele has made updates since that time (updates below 'Mar 2021')
 
-
 ## Mar 2021:
 New workflow: run *getNLDAS_simple.R*, then *combineNLDAS.R*, then *collateNLDAS.R*
 
 NOTE: getNLDAS_simple takes about 2-3 seconds per hour to download. (aka, 1 day of NLDAS data takes about a minute to download)
 
-updates in code:
+BGS update 09Mar2021: 
+- added nc_close to file loop to stop hanging after ~ 2000 files
+- removed referencing to values from other scripts (so now all are stand-alone and can be run separately)
+
+BGS update 05Mar2021:
 - B updated the getNLDAS_simple.R to remove the hardcoded information after line 43
 - B updated combineNLDAS.R to use nc_open and nc_get to eliminate errors from brick() and extractValues() also, removed hardcoding after first handful of lines
 - B updated collateNLDAS.R (formerly known as combineNLDAS_2.R) to remove hard coding. 
 
-NOTE: there are repeated references between the three scripts, I reccommend running in same R session.
 
-### Future updates planned soon: 
-- have a single R program to define all references in the three scripts and then use source() to run all three scripts, aka, remove need to visit all scripts except to debug
-
-
-
-##Prior updates from other labs:
+## Prior updates from other labs:
 
 ### Dec 2020:
 Updated with getNLDAS_simple-PQT.R (archived, incorporated into Mar update) - there were bugs that were worked out by one of Hilary's postdocs Robert Ladwig.

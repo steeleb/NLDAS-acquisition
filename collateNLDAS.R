@@ -1,19 +1,37 @@
+#v09Mar2021 BGS: removed references to combineNLDAS.R; 
 #v05Mar2021 BGS: updated to remove hardcoding after line 14; NOTE, this refers to values created in combineNLDAS.R
 
 library(tidyverse)
+library(dplyr)
 
+###########################################################
+### set-up and define directories, files, etc
+###########################################################
+
+#where you stored your .csv's
+dumpdir_csv = 'C:/Users/steeleb/Dropbox/gloeo_ME_lakes/data/modern gloeo/raw data/Auburn/NLDAS_download/raw_csv/'
 # define the dump directory for your final .csv files
 dumpdir_final = 'C:/Users/steeleb/Dropbox/gloeo_ME_lakes/data/modern gloeo/raw data/Auburn/NLDAS_download/final/'
 
-# make a list of the files previously collated
-files = list.files(dumpdir_csv, pattern = '.csv')
-
 #define the lakename, and the box number
 LakeName = 'Auburn'
-cellNum #Number of cells from combineNLDAS.R
-box = 1 # Chosen cell, you'll have to look at these to figure out which one is best. use nc_get(filename.nc, 'lat'), etc to find bounding boxes
 
+cellNum = 1 #number of cells in your area of interest
+box = 1 # Chosen cell of 'cellNum' from combineNLDAS.R, you'll have to look at these to figure out which one is best. use nc_get(filename.nc, 'lat'), etc to find bounding boxes and choose which one you want
 
+startdatetime = '2013-01-01 00:00:00'
+enddatetime = '2019-12-31 23:00:00'
+loc_tz = 'Etc/GMT+5' #EST with no DST observed
+
+#save the variable names in nc files
+vars_nc = c('TMP','SPFH', 'PRES', 'UGRD', 'VGRD', 'DLWRF', 'CONVfrac', 'CAPE', 'PEVAP', 'APCP', 'DSWRF')
+
+###########################################################
+### run loop to collate all data
+###########################################################
+
+# make a list of the files previously collated
+files = list.files(dumpdir_csv, pattern = '.csv')
 
 #make a null dataframme with the sequence of datetimes from above
 final.box = data.frame(dateTime = seq.POSIXt(as.POSIXct(startdatetime, tz= loc_tz),as.POSIXct(enddatetime,tz=loc_tz),by = 'hour'))
@@ -22,27 +40,40 @@ final.box = data.frame(dateTime = seq.POSIXt(as.POSIXct(startdatetime, tz= loc_t
 for (i in 1:11){
   fileIndx = grep(vars_nc[i],files)
   
-  df = read_csv(paste0(dumpdir_csv,files[fileIndx[1]])) %>% arrange(dateTime) # chronological order   # for (f in 2:length(fileIndx)){
+  df = read_csv(paste0(dumpdir_csv,files[fileIndx[1]])) %>% 
+    arrange(dateTime) # chronological order   
+  
+  if(length(fileIndx) >1) {
+    for (f in 2:length(fileIndx)){
+      df2 = read.csv(files[fileIndx[f]])
+      df = rbind(df,df2)
+    }
+  }
   
   # Total time series
   out = data.frame(dateTime = seq.POSIXt(as.POSIXct(startdatetime, tz= loc_tz),as.POSIXct(enddatetime,tz=loc_tz),by = 'hour'))
   
-  missingDates = out %>% anti_join(df)
-  nrow(missingDates) # Check for missing dates. 
+  missingDates = out %>% 
+    anti_join(df)
+  print(nrow(missingDates)) # Check for missing dates. 
   
-  out = out %>% left_join(df)
+  out = out %>% 
+    left_join(df,.)
+  print(nrow(out))
+  
+  # out <- distinct(out) #check for duplicate time stamps
   
   out %>% 
     mutate(dateTime = as.character(dateTime)) %>% 
     write_csv(.,paste0(dumpdir_final,LakeName,format(as.POSIXct(startdatetime), '%Y-%m-%d'), '_', format(as.POSIXct(enddatetime), '%Y-%m-%d'),'_', vars_nc[i],'.csv'))
   
-  final.box[,i+1] = out[,box+1] 
+  final.box <- left_join(final.box, out)
 }
 
 ####### Create a Single Dataframe ###########
-colnames(final.box) = c('dateTime',vars_nc)
 head(final.box)
-which(duplicated(final.box$dateTime)) #check for duplicate time stamps
+which(duplicated(final.box)) #check for duplicate time stamps - if this list is long, something is wrong!! There should be ZERO duplicated timestamps.
+# final.box <- distinct(final.box)
 which(is.na(final.box$TMP)) # check for NA values
 
 # Air saturation as a function of temperature and pressure
@@ -74,7 +105,6 @@ qsat = function(Ta, Pa){
 
 # Following code used to reformat dataframe to format used with GLM-AED
 
-library(dplyr)
 drivers <- final.box %>% 
   dplyr::rename(PotentialEvap = PEVAP,
                 LongWave.W_m2=DLWRF,
