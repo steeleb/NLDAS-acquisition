@@ -3,6 +3,7 @@
 
 library(tidyverse)
 library(dplyr)
+library(lubridate)
 
 ###########################################################
 ### set-up and define directories, files, etc
@@ -19,9 +20,9 @@ LakeName = 'Auburn'
 cellNum = 1 #number of cells in your area of interest
 box = 1 # Chosen cell of 'cellNum' from combineNLDAS.R, you'll have to look at these to figure out which one is best. use nc_get(filename.nc, 'lat'), etc to find bounding boxes and choose which one you want
 
-startdatetime = '2013-01-01 00:00:00'
-enddatetime = '2019-12-31 23:00:00'
-loc_tz = 'Etc/GMT+5' #EST with no DST observed
+startdatetime = '2017-01-01 00:00:00'
+enddatetime = '2017-12-31 23:00:00'
+loc_tz = 'Etc/GMT+5' 
 
 #save the variable names in nc files
 vars_nc = c('TMP','SPFH', 'PRES', 'UGRD', 'VGRD', 'DLWRF', 'CONVfrac', 'CAPE', 'PEVAP', 'APCP', 'DSWRF')
@@ -40,7 +41,9 @@ final.box = data.frame(dateTime = seq.POSIXt(as.POSIXct(startdatetime, tz= loc_t
 for (i in 1:11){
   fileIndx = grep(vars_nc[i],files)
   
-  df = read_csv(paste0(dumpdir_csv,files[fileIndx[1]])) %>% 
+  df = read_csv(paste0(dumpdir_csv,files[fileIndx[1]]),
+                col_types = c('cn')) %>% 
+    dplyr::mutate(dateTime = as.POSIXct(dateTime, tz=loc_tz)) %>% 
     arrange(dateTime) # chronological order   
   
   if(length(fileIndx) >1) {
@@ -49,7 +52,7 @@ for (i in 1:11){
       df = rbind(df,df2)
     }
   }
-  
+
   # Total time series
   out = data.frame(dateTime = seq.POSIXt(as.POSIXct(startdatetime, tz= loc_tz),as.POSIXct(enddatetime,tz=loc_tz),by = 'hour'))
   
@@ -58,16 +61,16 @@ for (i in 1:11){
   print(nrow(missingDates)) # Check for missing dates. 
   
   out = out %>% 
-    left_join(df,.)
+    left_join(df)
   print(nrow(out))
-  
   # out <- distinct(out) #check for duplicate time stamps
   
   out %>% 
     mutate(dateTime = as.character(dateTime)) %>% 
     write_csv(.,paste0(dumpdir_final,LakeName,format(as.POSIXct(startdatetime), '%Y-%m-%d'), '_', format(as.POSIXct(enddatetime), '%Y-%m-%d'),'_', vars_nc[i],'.csv'))
   
-  final.box <- left_join(final.box, out)
+  final.box <- final.box %>% 
+    left_join(out)
 }
 
 ####### Create a Single Dataframe ###########

@@ -32,7 +32,7 @@ lake_name = 'Auburn'
 cellNum = 1 
 #How many output cells will there be? Need to check this beforehand by downloading a single netcdf file for your location
 
-loc_tz = 'Etc/GMT+5' #EST with no DST observed
+loc_tz = 'Etc/GMT+5' 
 
 ###########################################################
 ### Set up the output data frame
@@ -47,7 +47,7 @@ for (l in 1:length(vars_nc)){
   colClasses = c("POSIXct", rep("numeric",cellNum))
   col.names = c('dateTime',rep(vars_nc[l],cellNum))
   output[[l]] = read.table(text = "",colClasses = colClasses,col.names = col.names)
-  attributes(output[[l]]$dateTime)$tzone = loc_tz
+  attributes(output[[l]]$dateTime)$tzone = 'GMT'
 }
 
 ###########################################################
@@ -64,7 +64,7 @@ for (i in 1:length(nc_files)) {
   for (v in 1:length(vars_nc)) {
     nldasvar <- vars_nc[v]
     br = nc_open(paste0(dumpdir_nc,nc_files[i]))
-    output[[v]][i,1] = (paste0(substr(nc_files[i], 1, 4),'-', substr(nc_files[i], 5,6), '-', substr(nc_files[i], 7,8), ' ', substr(nc_files[i], 9,10), ':', substr(nc_files[i], 11,12)))
+    output[[v]][i,1] =  as.POSIXct(paste0(substr(nc_files[i], 1, 4),'-', substr(nc_files[i], 5,6), '-', substr(nc_files[i], 7,8), ' ', substr(nc_files[i], 9,10), ':', substr(nc_files[i], 11,12)), tz=loc_tz)
     output[[v]][i,-1] = ncvar_get(br, nldasvar)
     nc_close(br)
   }
