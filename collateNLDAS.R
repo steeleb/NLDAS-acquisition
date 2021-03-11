@@ -1,4 +1,4 @@
-#v09Mar2021 BGS: removed references to combineNLDAS.R; 
+#v09Mar2021 BGS: removed references to combineNLDAS.R; note that this was only tested for NLDAS data that were downloaded for a single box/cell, further debugging may be necessary for downloads that include multiple cells/boxes
 #v05Mar2021 BGS: updated to remove hardcoding after line 14; NOTE, this refers to values created in combineNLDAS.R
 
 library(tidyverse)
@@ -20,9 +20,13 @@ LakeName = 'Auburn'
 cellNum = 1 #number of cells in your area of interest
 box = 1 # Chosen cell of 'cellNum' from combineNLDAS.R, you'll have to look at these to figure out which one is best. use nc_get(filename.nc, 'lat'), etc to find bounding boxes and choose which one you want
 
+# define the time range
 startdatetime = '2017-01-01 00:00:00'
-enddatetime = '2017-12-31 23:00:00'
-loc_tz = 'Etc/GMT+5' 
+enddatetime = '2019-12-31 23:00:00'
+loc_tz = 'GMT' #this should be the same as previous entries
+
+#enter the timezone you would like to have the final data in. see OlsonNames() for options
+local_tz = 'EST'
 
 #save the variable names in nc files
 vars_nc = c('TMP','SPFH', 'PRES', 'UGRD', 'VGRD', 'DLWRF', 'CONVfrac', 'CAPE', 'PEVAP', 'APCP', 'DSWRF')
@@ -73,11 +77,17 @@ for (i in 1:11){
     left_join(out)
 }
 
-####### Create a Single Dataframe ###########
+####### Create a Single Dataframe and adjust time zone###########
 head(final.box)
+tail(final.box)
 which(duplicated(final.box)) #check for duplicate time stamps - if this list is long, something is wrong!! There should be ZERO duplicated timestamps.
 # final.box <- distinct(final.box)
 which(is.na(final.box$TMP)) # check for NA values
+
+# adjust to local timezone #
+final.box <- final.box %>% 
+  mutate(local_dateTime = with_tz(dateTime, tzone = local_tz))
+head(final.box)
 
 # Air saturation as a function of temperature and pressure
 # Used to calculate relative humidity 
@@ -124,10 +134,10 @@ drivers <- final.box %>%
                 WindSpeed.m_s=sqrt(WindSpeed_Zonal^2+WindSpeed_Meridional^2),
                 AirTemp.C = AirTemp2m - 273.15, 
                 Rain.m_day = Precipitation*24/1000) %>% 
-  dplyr::select(dateTime,AirTemp.C,ShortWave.W_m2,LongWave.W_m2,
+  dplyr::select(local_dateTime,AirTemp.C,ShortWave.W_m2,LongWave.W_m2,
                 SpecHumidity.kg_kg,RelHum,WindSpeed.m_s,Rain.m_day,SurfPressure.Pa)
 drivers %>% 
-  mutate(dateTime = as.character(dateTime)) %>% 
+  mutate(local_dateTime = as.character(local_dateTime)) %>% 
   write_csv(.,paste0(dumpdir_final,LakeName,format(as.POSIXct(startdatetime), '%Y-%m-%d'), '_', format(as.POSIXct(enddatetime), '%Y-%m-%d'),'_box',box,'_alldata.csv'))
 
 drivers %>% 

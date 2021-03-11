@@ -6,7 +6,7 @@
 ###########################################################
 
 #v09Mar21 BGS: removed reliance on other script objects; nc_open timing out after about 3 months of data, so added an additional loop in the read function to open by month and added nc_close to script.
-#v05Mar21 BGS: removed hardcoding after line 37
+#v05Mar21 BGS: removed hardcoding after line 35
 
 library(lubridate)
 library(ncdf4)
@@ -32,7 +32,7 @@ lake_name = 'Auburn'
 cellNum = 1 
 #How many output cells will there be? Need to check this beforehand by downloading a single netcdf file for your location
 
-loc_tz = 'Etc/GMT+5' 
+loc_tz = 'GMT'  #this needs to match your previous entry
 
 ###########################################################
 ### Set up the output data frame

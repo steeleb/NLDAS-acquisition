@@ -43,7 +43,7 @@ extent = as.numeric(c(-70.27, 44.15, -70.25, 44.17))
 ###########################################################
 startdatetime = '2013-01-01 00:00:00'
 enddatetime = '2019-12-31 23:00:00'
-loc_tz = 'Etc/GMT+5' #only run in tz's without DST, otherwise you will be very sad when you go to collate and it's a mess. 
+loc_tz = 'GMT' #only run in tz's without DST, otherwise you will be very sad when you go to collate and it's a mess. 
 
 
 # sequence the datetime over your desired time period
