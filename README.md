@@ -8,6 +8,8 @@ Unfortunately, for the average user, NLDAS-2 data, while publicly available, is 
 
 Therefore, to download a time-series over water (say, a lake) in the R environment, requires a fairly advanced understanding of web service calls and working with multi-layer raster objects. The code in this repository provides a working implementation of this looped web call. Even with this code, to download an hourly decadal time series for a specific location can take hours to days to run. 
 
+-Hilary Dugan
+
 ### Suggested Citation for NLDAS-2 forcing data:
 Xia, Y., Mitchell, K., Ek, M., Sheffield, J., Cosgrove, B., Wood, E., Luo, L, Alonge, C., Wei, H., Meng, J., Livneh, B., Lettenmaier, D., Koren, V., Duan, Q., Mo, K., Fan, Y., & Mocko, D. (2012). Continental‐scale water and energy flux analysis and validation for the North American Land Data Assimilation System project phase 2 (NLDAS‐2): 1. Intercomparison and application of model products. Journal of Geophysical Research: Atmospheres, 117(D3), https://doi.org/10.1029/2011jd016048
 
