@@ -1,3 +1,7 @@
+# secrets
+setup.yml
+
+# R envs
 .Rproj.user
 .Rhistory
 .RData
