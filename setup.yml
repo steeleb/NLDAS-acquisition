@@ -1,0 +1,37 @@
+# This file sets up all configurations for running the NLDAS-2 acquisition pipeline. 
+
+# Point to dump directory where data will be saved
+
+dumpdir_nc : 'C:/Users/steeleb/Desktop/temporary/'
+
+###########################################################
+### Use shapefile of lake to set bounding box
+###########################################################
+# read in lake file (as a .shp file) to get bounding box
+# lakeShape : st_read('shapefile.shp') 
+extent : ['-70.26', '44.16', '-70.25', '44.17']
+#if the extent is loaded from the shapefile (above), make sure they are in decimal degrees, otherwise this code will not work
+
+###########################################################
+### Set timeframe
+###########################################################
+startdatetime : '1981-01-01 00:00:00'
+enddatetime : '1981-01-31 23:59:59'
+loc_tz : 'Etc/GMT+5' #only run in tz's without DST, otherwise you will be very sad when you go to collate and it's a mess. 
+
+###########################################################
+### set dump directory for .csv files and lake name
+###########################################################
+
+#where you want to dump your monthly .csv's
+dumpdir_csv : 'C:/Users/steeleb/Desktop/temporarycsv/'
+
+lake_name : 'Auburn'
+
+###########################################################
+### Need to know how many cells your lake falls within
+### Can download one instance of data from the earthdata site and see how many columns there are
+### use 'nc_open(filename)' to see how many cells there are
+###########################################################
+cellNum : 1 
+#How many output cells will there be? Need to check this beforehand by downloading a single netcdf file for your location
