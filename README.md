@@ -11,6 +11,9 @@ Therefore, to download a time-series over water (say, a lake) in the R environme
 -Hilary Dugan
 
 ### Suggested Citation for NLDAS-2 forcing data:
+
+Xia, Y., et al., NCEP/EMC (2009), NLDAS Primary Forcing Data L4 Hourly 0.125 x 0.125 degree V002, Edited by David Mocko, NASA/GSFC/HSL, Greenbelt, Maryland, USA, Goddard Earth Sciences Data and Information Services Center (GES DISC), Accessed: [Data Access Date], 10.5067/6J5LHHOHZHN4
+
 Xia, Y., Mitchell, K., Ek, M., Sheffield, J., Cosgrove, B., Wood, E., Luo, L, Alonge, C., Wei, H., Meng, J., Livneh, B., Lettenmaier, D., Koren, V., Duan, Q., Mo, K., Fan, Y., & Mocko, D. (2012). Continental‐scale water and energy flux analysis and validation for the North American Land Data Assimilation System project phase 2 (NLDAS‐2): 1. Intercomparison and application of model products. Journal of Geophysical Research: Atmospheres, 117(D3), https://doi.org/10.1029/2011jd016048
 
 ## Contribution encouraged!
@@ -20,7 +23,10 @@ If you use these scripts and have to debug them, please let us know by making a 
 
 ***
 
-This repository contains the scripts from Hilary Dugan (hdugan@wisc.edu) for downloading and processing NLDAS-2 data. B. Steele (steeleb@caryinstitute.org) has made updates since that time (updates below 'Mar 2021')
+This repository contains the scripts from Hilary Dugan (hdugan@wisc.edu) for downloading and processing NLDAS-2 data. B. Steele (steeleb@caryinstitute.org) has made updates since that time 
+
+## Feb 2023:
+Updated workflow
 
 ## Mar 2021:
 New workflow: run *getNLDAS_simple.R*, then *combineNLDAS.R*, then *collateNLDAS.R*
@@ -55,7 +61,8 @@ Things to note: It uses a shapefile to set the extent. You could also just hardc
 I can't really remember the exact details because I haven't looked at these scripts in a year but
 1) getNLDAS_simple downloads data each hour, so you'll get a ton of tiny 8kb netcdf files. 
 2) combineNLDAS The script reads the netcdf files and creates an output list. Based on the extent you set, it will download however many grid cells are within that extent. 
-3) combineNLDAS_2 Stitches together the individual grid cells to have all 11 climate variables together. 
+
+3) collateNLDAS Stitches together the individual grid cells to have all 11 climate variables together. 
 
 Also, I think I last used these for Mendota. So that string is hardcoded in in some places.
 

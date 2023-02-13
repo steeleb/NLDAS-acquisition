@@ -19,14 +19,14 @@ library(stringr)
 ###########################################################
 ### Point to dump directory where data will be saved
 ###########################################################
-dumpdir_nc = 'C:/Users/steeleb/Dropbox/gloeo_ME_lakes/data/modern gloeo/raw data/Auburn/NLDAS_download/raw/'
+dumpdir_nc = 'C:/Users/steeleb/Desktop/temporary/'
 
 ###########################################################
 ### Enter password information
 ###########################################################
 #https://urs.earthdata.nasa.gov/profile <-- GET A EARTHDATA LOGIN
-username = 'username'
-password = 'password'
+username = setup$username
+password = setup$password
 #in addition, make sure you have authorized your account access to the GEODISC archives:
 # https://disc.gsfc.nasa.gov/earthdata-login
 
@@ -41,7 +41,7 @@ extent = as.numeric(c(-70.27, 44.15, -70.25, 44.17))
 ###########################################################
 ### Set timeframe
 ###########################################################
-startdatetime = '2013-01-01 00:00:00'
+startdatetime = '2019-12-01 00:00:00'
 enddatetime = '2019-12-31 23:00:00'
 loc_tz = 'GMT' #only run in tz's without DST, otherwise you will be very sad when you go to collate and it's a mess. 
 
