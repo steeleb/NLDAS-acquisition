@@ -10,7 +10,7 @@ Therefore, to download a time-series over water (say, a lake) in the R environme
 
 -Hilary Dugan
 
-### Suggested Citation for NLDAS-2 forcing data:
+## Suggested Citations for NLDAS-2 forcing data:
 
 Xia, Y., et al., NCEP/EMC (2009), NLDAS Primary Forcing Data L4 Hourly 0.125 x 0.125 degree V002, Edited by David Mocko, NASA/GSFC/HSL, Greenbelt, Maryland, USA, Goddard Earth Sciences Data and Information Services Center (GES DISC), Accessed: [Data Access Date], 10.5067/6J5LHHOHZHN4
 
@@ -20,13 +20,22 @@ Xia, Y., Mitchell, K., Ek, M., Sheffield, J., Cosgrove, B., Wood, E., Luo, L, Al
 
 If you use these scripts and have to debug them, please let us know by making a pull request or by opening a new issue. We view these scripts as a community effort to further open science and appreciate the contribution of all people.
 
+***
+
+# Overarching workflow
+
+1) Create a `secrets.yml` file - to do this, follow the instructions in the `secrets_form.yml` file. 
+2) Populate the `setup.yml` file. If you are running this code for multiple locations, or with multiple parameters, I suggest having a single setup file per run of the scripts.
+3) Run getNLDAS_config.R, 
 
 ***
 
-This repository contains the scripts from Hilary Dugan (hdugan@wisc.edu) for downloading and processing NLDAS-2 data. B. Steele (steeleb@caryinstitute.org) has made updates since that time 
+# Version History
+
+This repository contains the scripts from Hilary Dugan (hdugan@wisc.edu), with edits from folks from her lab for downloading and processing NLDAS-2 data. B. Steele (steeleb@caryinstitute.org) has made updates since that time.
 
 ## Feb 2023:
-Updated workflow
+Updated workflow to move all user-defined options to the setup.yml - also uses secrets.yml to store username and password
 
 ## Mar 2021:
 New workflow: run *getNLDAS_simple.R*, then *combineNLDAS.R*, then *collateNLDAS.R*

@@ -31,3 +31,20 @@ extent : ['-70.26', '44.16', '-70.26', '44.16']
 startdatetime : '1981-01-01 00:00:00'
 enddatetime : '1981-01-31 23:59:59'
 loc_tz : 'Etc/GMT+5' #only run in tz's without DST, otherwise you will be very sad when you go to collate and it's a mess. 
+
+###########################################################
+### Define parameters of interest
+###  APCP:Precipitation hourly total [kg/m^2]
+###  CAPE:180-0 mb above ground Convective Available Potential Energy [J/kg]
+###  CONVfrac:Fraction of total precipitation that is convective [unitless]
+###  DLWRF:Longwave radiation flux downwards (surface) [W/m^2]
+###  DSWRF:Shortwave radiation flux downwards (surface) [W/m^2]
+###  PEVAP:Potential evaporation hourly total [kg/m^2]
+###  PRES:Surface pressure [Pa]
+###  SPFH:2-m above ground Specific humidity [kg/kg]
+###  TMP:2-m above ground Temperature [K]
+###  UGRD:10-m above ground Zonal wind speed [m/s]
+###  VGRD:10-m above ground Meridional wind speed [m/s]
+###########################################################
+# enter the parameters separaged by commas, in square brackets
+params : ['DSWRF', 'SPFH', 'UGRD', 'VGRD']
