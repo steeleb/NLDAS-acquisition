@@ -2,16 +2,18 @@
 ### Downloading NLDAS2 data for meteorological hourly forcing
 ### http://ldas.gsfc.nasa.gov/nldas/NLDAS2forcing.php
 ### Author: Hilary Dugan hilarydugan@gmail.com
+### Author: B Steele steeleb@caryinstitute.org
 ### Date: 2019-09-30
+### Last Updated: 2023-02-13
 ###########################################################
 
-library(RCurl)
+# library(RCurl)
 library(lubridate)
-library(raster)
-library(ncdf4)
-library(sf)
-library(httr)
-library(curl)
+# library(raster)
+# library(ncdf4)
+# library(sf)
+# library(httr)
+# library(curl)
 library(stringr)
 library(yaml)
 
@@ -50,8 +52,8 @@ enddatetime = setup$enddatetime
 loc_tz = setup$loc_tz
 
 # sequence the datetime over your desired time period
-out.ts = seq.POSIXt(as.POSIXct(startdatetime, tz = loc_tz),
-                    as.POSIXct(enddatetime,tz=loc_tz), 
+out.ts = seq.POSIXt(with_tz(as.POSIXct(startdatetime, tz = loc_tz), 'UTC'),
+                    with_tz(as.POSIXct(enddatetime,tz=loc_tz), 'UTC'), 
                     by = 'hour')
 
 # Create output list of tables
