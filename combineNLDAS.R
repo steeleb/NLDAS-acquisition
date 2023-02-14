@@ -13,16 +13,6 @@ library(ncdf4)
 library(tidyverse)
 
 
-###########################################################
-### set dump directory for .csv files and lake name
-###########################################################
-#where your .nc files are stored -- make sure all .nc files have a size >0, otherwise your loop will get hung up!
-# dumpdir_nc = 'C:/Users/steeleb/Dropbox/gloeo_ME_lakes/data/modern gloeo/raw data/Auburn/NLDAS_download/raw/'
-
-#where you want to dump your monthly .csv's
-dumpdir_csv = 'C:/Users/steeleb/Desktop/temporarycsv/'
-
-lake_name = 'Auburn'
 
 ###########################################################
 ### Need to know how many cells your lake falls within
